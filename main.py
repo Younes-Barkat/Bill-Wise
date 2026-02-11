@@ -23,12 +23,9 @@ def display(im_path): #from stackoverflow
      ax.imshow(im_data, cmap='gray')
      plt.show()
 
-# display(image_file)
-
 inverted_image = cv2.bitwise_not(img)
 cv2.imwrite("temp/inverted.jpg", inverted_image)
 
-# display("temp/inverted.jpg")
 
 def grayscale(image):
 
@@ -37,11 +34,8 @@ def grayscale(image):
 gray_image = grayscale(img)
 cv2.imwrite("temp/gray.jpg", gray_image)
 
-# display("temp/gray.jpg")
-
 thresh, im_bw = cv2.threshold(gray_image, 150, 170, cv2.THRESH_BINARY)
 cv2.imwrite("temp/im_bw.jpg", im_bw)
-# display("temp/im_bw.jpg")
 
 def noise_removal(image):
      import numpy as np
@@ -55,10 +49,30 @@ def noise_removal(image):
 
 no_noise = noise_removal(im_bw)
 cv2.imwrite("temp/no_noise.jpg", no_noise)
-display("temp/no_noise.jpg")
+
+def thin_font(image):
+     import numpy as np
+     image = cv2.bitwise_not(image)
+     kernel = np.ones((2, 2), np.uint8)
+     image = cv2.erode(image, kernel, iterations=1)
+     image = cv2.bitwise_not(image)
+     return image
+
+eroded_image = thin_font(no_noise)
+cv2.imwrite("temp/eroded_image.jpg", eroded_image)
 
 
+def thick_font(image):
+     import numpy as np
+     image = cv2.bitwise_not(image)
+     kernel = np.ones((2, 2), np.uint8)
+     image = cv2.dilate(image, kernel, iterations=1)
+     image = cv2.bitwise_not(image)
+     return image
+
+dilated_image = thick_font(eroded_image)
+cv2.imwrite("temp/dilated_image.jpg", dilated_image)
+display("temp/dilated_image.jpg")
 
 
-
-
+new = cv2.imread("data/download.jpg")
