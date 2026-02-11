@@ -6,7 +6,7 @@ import pytesseract
 image_file = "data/download.jpg"
 img = cv2.imread(image_file)
 
-# cv2.imshow("Original image", img)
+
 cv2.waitKey(0)
 def display(im_path): #from stackoverflow
      dpi = 80
@@ -35,18 +35,22 @@ def grayscale(image):
 gray_image = grayscale(img)
 cv2.imwrite("temp/gray.jpg", gray_image)
 
-thresh, im_bw = cv2.threshold(gray_image, 150, 170, cv2.THRESH_BINARY)
+# thresh, im_bw = cv2.threshold(gray_image, 190, 205, cv2.THRESH_BINARY)
+thresh, im_bw = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 cv2.imwrite("temp/im_bw.jpg", im_bw)
+display("temp/im_bw.jpg")
+
 
 def noise_removal(image):
-     import numpy as np
-     kernel = np.ones((1, 1), np.uint8)
-     image = cv2.dilate(image, kernel, iterations=1)
-     kernel = np.ones((1, 1), np.uint8)
-     image = cv2.erode(image, kernel, iterations=1)
-     image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
-     image = cv2.medianBlur(image, 3)
-     return image
+     # import numpy as np
+     # kernel = np.ones((1, 1), np.uint8)
+     # image = cv2.dilate(image, kernel, iterations=1)
+     # kernel = np.ones((1, 1), np.uint8)
+     # image = cv2.erode(image, kernel, iterations=1)
+     # image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+     # image = cv2.medianBlur(image, 3)
+     # return image
+     return cv2.fastNlMeansDenoising(image, None, 10, 7, 21)
 
 no_noise = noise_removal(im_bw)
 cv2.imwrite("temp/no_noise.jpg", no_noise)
@@ -92,7 +96,7 @@ def getSkewAngle(cvImage) -> float:
     # Use larger kernel on X axis to merge characters into single line, cancelling out any spaces.
     # But use smaller kernel on Y axis to separate between different blocks of text
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 5))
-    dilate = cv2.dilate(thresh, kernel, iterations=2)
+    dilate = cv2.dilate(thresh, kernel, iterations=1)
 
     # Find all contours
     contours, hierarchy = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
